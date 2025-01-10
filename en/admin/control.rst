@@ -766,57 +766,49 @@ On the above, you can indicate the blocker which brought lock timeout and the wa
 When a deadlock occurs, lock information of that transaction is written into the event log. The following is an output example.
  
 ::
- 
-    02/02/16 20:56:17.638 - DEADLOCK
-    client: public@testhost|csql(21541)
-    hold:
-      lock:    X_LOCK (oid=0|650|5, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 3
-      bind: 1
- 
-      lock:    X_LOCK (oid=0|650|3, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 3
-      bind: 1
- 
-    wait:
-      lock:    X_LOCK (oid=0|650|4, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 5
-      bind: 2
- 
-    client: public@testhost|csql(21529)
-    hold:
-      lock:    X_LOCK (oid=0|650|6, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 4
-      bind: 2
- 
-      lock:    X_LOCK (oid=0|650|4, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 4
-      bind: 2
- 
-    wait:
-      lock:    X_LOCK (oid=0|650|3, table=t)
-      sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1 
-      bind: 6
-      bind: 1
- 
-*   client: <DB user>@<application client host name>|<process name>(<process ID>)
 
-    *   hold: an object which is acquiring a lock
+    02/02/16 20:56:17.638 - DEADLOCK
+    hold:
+        client: public@testhost|csql(21541) (Deadlock Victim)
+        lock: X_LOCK (oid=0|650|5, table=t)
+        sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1
+        bind: 3
+        bind: 1
     
-        *   lock: lock type, table name
-        *   sql: SQL which is acquiring locks
-        *   bind: binding value
-        
-    *   wait: an object which is waiting a lock
-    
-        *   lock: lock type, table name
-        *   sql: SQL which is waiting a lock
-        *   bind: binding value
+    wait:
+        client: public@testhost|csql(21529)
+        lock: X_LOCK (oid=0|650|5, table=t)
+        sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1
+        bind: 4
+        bind: 1
+
+    hold:
+        client: public@testhost|csql(21529)
+        lock: X_LOCK (oid=0|650|6, table=t)
+        sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1
+        bind: 5
+        bind: 2
+
+    wait:
+        client: public@testhost|csql(21541) (Deadlock Victim)
+        lock: X_LOCK (oid=0|650|6, table=t)
+        sql: update [t] [t] set [t].[a]= ?:0  where [t].[a]= ?:1
+        bind: 6
+        bind: 2
+
+*   hold: an object which is acquiring a lock
+
+    *   client: <DB user>@<application client host name>|<process name>(<process ID>)
+    *   lock: lock type, table name
+    *   sql: SQL which is acquiring locks
+    *   bind: binding value
+
+*   wait: an object which is waiting a lock
+
+    *   client: <DB user>@<application client host name>|<process name>(<process ID>)
+    *   lock: lock type, table name
+    *   sql: SQL which is waiting a lock
+    *   bind: binding value
  
 On the above output, you can check the application clients and SQLs which brought the deadlock.
       
