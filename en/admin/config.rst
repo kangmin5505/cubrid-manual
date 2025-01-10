@@ -2247,7 +2247,11 @@ The following are other parameters. The type and value range for each parameter 
 
 **auto_restart_server**
 
-    **auto_restart_server** is a parameter to configure whether to restart the process when it stops due to fatal errors being occurred in database server process. If **auto_restart_server** value is set to **yes**, the server process automatically restarts when it has stopped due to errors; it does not restart in case it stops by following normal process (by using **STOP** command).
+    **auto_restart_server** is a parameter used to configure whether to restart the process when it terminates abnormally due to fatal errors occurring in the database server process (cub_server). The default value is **yes**.
+
+    If this parameter is set to **yes**, the master process (cub_master) detects the abnormal termination of the server process and automatically restarts it. However, if the server process, which was restarted by this functionality, abnormally terminates again within 120 seconds, the system will not attempt another restart to prevent potential issues caused by repeated abnormal terminations. Additionally, server processes that have been stopped through a normal process (**cubrid server stop** command) will not be automatically restarted.
+
+    This parameter only operates in Linux environments and affects server processes that are not configured for HA. It will not function properly if the master process is not running.
 	
 .. _enable_string_compression:
 	
