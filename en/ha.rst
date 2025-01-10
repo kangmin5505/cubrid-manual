@@ -1521,13 +1521,14 @@ The following example shows how to check log information (Active Info.) of the m
 
 *   Applied Info.: Shows the status information after the slave node applies the replication log.
 *   Copied Active Info.: Shows the status information after the slave node copies the replication log.
+*   Copied Archive Info. : Shows the status information after the slave node copies the archive log.
 *   Active Info.: Shows the status information after the master node records the transaction log.
 *   Delay in Copying Active Log: Shows the status information which the transaction logs' copy is delayed.
 *   Delay in Applying Copied Log: Shows the status information which the transaction logs' application is delayed.
 
 ::
 
-    [nodeB] $ cubrid applyinfo -L /home/cubrid/DB/testdb_nodeA -r nodeA -a -i 3 testdb
+    [nodeB] $ cubrid applyinfo -L /home/cubrid/DB/testdb_nodeA -r nodeA -a -p 0 -i 3 testdb
      
      *** Applied Info. *** 
     Insert count                   : 289492
@@ -1540,13 +1541,27 @@ The following example shows how to check log information (Active Info.) of the m
      *** Copied Active Info. *** 
     DB name                        : testdb
     DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:10.000 PM 11/04/2012 (1352014150)
     EOF LSA                        : 27722 | 10088
     Append LSA                     : 27722 | 10088
     HA server state                : active
 
+     *** Copied Archive Info. ***
+    DB name                        : testdb
+    DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:20.000 PM 11/04/2012 (1352014160)
+    Archive number                 : 0
+    Log page 0 (phy: 1 pageid: 0, offset 0)
+    offset:0000 (tid:1 bck p:-1,o:-1 frw p:0,o:96 type:3)
+    offset:0096 (tid:1 bck p:0,o:0 frw p:0,o:320 type:5)
+    offset:0320 (tid:1 bck p:0,o:96 frw p:0,o:552 type:4)
+    offset:0552 (tid:1 bck p:0,o:320 frw p:0,o:608 type:4)
+    ...
+
      *** Active Info. *** 
     DB name                        : testdb
     DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:10.000 PM 11/04/2012 (1352014150)
     EOF LSA                        : 27726 | 2512
     Append LSA                     : 27726 | 2512
     HA server state                : active
@@ -1575,6 +1590,7 @@ The items shown by each status are as follows:
 
     *   DB name: Name of a target database in which the replication log copy process copies logs
     *   DB creation time: The creation time of a database copied through replication log copy process
+    *   Vol creation time: The creation time of the volume copied through replication log copy process
 
     *   EOF LSA: Information of pageid and offset copied at the last time on the target node by the replication log copy process. There will be a delay in copying logs as much as difference with the EOF LSA value of "Active Info." and with the Append LSA value of "Copied Active Info."
 
@@ -1582,10 +1598,20 @@ The items shown by each status are as follows:
 
     *   HA server state: Status of a database server process which replication log copy process receives logs from. For details on status, see :ref:`ha-server`.
 
+*   Copied Archive Info.
+
+    *   DB name: Name of a target database in which the replication log copy process copies logs
+    *   DB creation time: The creation time of a database copied through replication log copy process
+    *   Vol creation time: The creation time of the volume copied through replication log copy process
+    *   Archive number: The number of archive logs copied through replication log copy process
+    *   Log page: The information of pageid and offset of the archive log copied through replication log copy process.
+    *   offset: The information of pageid and offset of the archive log copied through replication log copy process.
+
 *   Active Info.
 
     *   DB name: Name of a database whose node was configured in the **-r** option.
     *   DB creation time: Database creation time of a node that is configured in the **-r** option.
+    *   Vol creation time: Volume creation time of a node that is configured in the **-r** option.
     *   EOF LSA: The last information of pageid and offset of a database transaction log of a node that is configured in the **-r** option. There will be a delay in copying logs as much as difference between the EOF LSA value of "Copied Active Info." and this value.
     
     *   Append LSA: Information of pageid and offset written at the last time on the disk by the database whose node was configured in the **-r** option.
@@ -3499,6 +3525,7 @@ Replication mismatch between replication nodes, indicating that data of the mast
          *** Copied Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active
@@ -3506,6 +3533,7 @@ Replication mismatch between replication nodes, indicating that data of the mast
          ***  Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active
@@ -3528,6 +3556,7 @@ Replication mismatch between replication nodes, indicating that data of the mast
          *** Copied Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active

@@ -1519,13 +1519,14 @@ CUBRID HA의 복제 로그 복사 및 반영 상태를 확인한다. ::
 
 *   Applied Info. : 슬레이브 노드가 복제 로그를 반영한 상태 정보를 나타낸다.
 *   Copied Active Info. : 슬레이브 노드가 복제 로그를 복사한 상태 정보를 나타낸다.
+*   Copied Archive Info. : 슬레이브 노드가 복사한 보관로그의 상태 정보를 나타낸다.
 *   Active Info. : 마스터 노드가 트랜잭션 로그를 기록한 상태 정보를 나타낸다.
 *   Delay in Copying Active Log: 트랜잭션 로그 복사 지연 상태를 나타낸다. 
 *   Delay in Applying Copied Log: 트랜잭션 로그 반영 지연 상태를 나타낸다. 
 
 ::
 
-    [nodeB] $ cubrid applyinfo -L /home/cubrid/DB/testdb_nodeA -r nodeA -a -i 3 testdb
+    [nodeB] $ cubrid applyinfo -L /home/cubrid/DB/testdb_nodeA -r nodeA -a -p 0 -i 3 testdb
      
      *** Applied Info. *** 
     Insert count                   : 289492
@@ -1538,13 +1539,27 @@ CUBRID HA의 복제 로그 복사 및 반영 상태를 확인한다. ::
      *** Copied Active Info. *** 
     DB name                        : testdb
     DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:10.000 PM 11/04/2012 (1352014150)
     EOF LSA                        : 27722 | 10088
     Append LSA                     : 27722 | 10088
     HA server state                : active
 
+     *** Copied Archive Info. ***
+    DB name                        : testdb
+    DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:20.000 PM 11/04/2012 (1352014160)
+    Archive number                 : 0
+    Log page 0 (phy: 1 pageid: 0, offset 0)
+    offset:0000 (tid:1 bck p:-1,o:-1 frw p:0,o:96 type:3)
+    offset:0096 (tid:1 bck p:0,o:0 frw p:0,o:320 type:5)
+    offset:0320 (tid:1 bck p:0,o:96 frw p:0,o:552 type:4)
+    offset:0552 (tid:1 bck p:0,o:320 frw p:0,o:608 type:4)
+    ...
+
      ***  Active Info. *** 
     DB name                        : testdb
     DB creation time               : 04:29:00.000 PM 11/04/2012 (1352014140)
+    Vol creation time              : 04:29:10.000 PM 11/04/2012 (1352014150)
     EOF LSA                        : 27726 | 2512
     Append LSA                     : 27726 | 2512
     HA server state                : active
@@ -1573,6 +1588,7 @@ CUBRID HA의 복제 로그 복사 및 반영 상태를 확인한다. ::
 
     *   DB name : 복제 로그 복사 프로세스가 로그를 복사하는 대상 데이터베이스의 이름
     *   DB creation time : 복제 로그 복사 프로세스가 복사하는 데이터베이스의 생성 시간
+    *   Vol creation time : 복제 로그 복사 프로세스가 복사하는 볼륨의 생성 시간
 
     *   EOF LSA : 복제 로그 복사 프로세스가 대상 노드에서 복사한 로그의 마지막 pageid와 offset 정보. 이 값과 "Active Info."의 EOF LSA 값의 차이 및 "Copied Active Info."의 Append LSA 값의 차이만큼 로그 복사의 지연이 있다.
 
@@ -1580,10 +1596,20 @@ CUBRID HA의 복제 로그 복사 및 반영 상태를 확인한다. ::
 
     *   HA server state : 복제 로그 복사 프로세스가 로그를 받아오는 데이터베이스 서버 프로세스의 상태. 상태에 대한 자세한 설명은 :ref:`ha-server` 를 참고하도록 한다.
 
+*   Copied Archive Info.
+
+    *   DB name : 복제 로그 복사 프로세스가 로그를 복사하는 대상 데이터베이스의 이름
+    *   DB creation time : 복제 로그 복사 프로세스가 복사하는 데이터베이스의 생성 시간
+    *   Vol creation time : 복제 로그 복사 프로세스가 복사하는 볼륨의 생성 시간
+    *   Archive number : 복제 로그 복사 프로세스가 복사하는 보관로그의 번호
+    *   Log page : 복제 로그 복사 프로세스가 복사하는 로그의 페이지 정보. pageid와 offset 정보를 포함한다.
+    *   offset : 로그 페이지의 offset 정보. 이 값은 pageid와 offset 정보를 포함한다.
+
 *   Active Info.
 
     *   DB name : **-r** 옵션에 설정한 노드의 데이터베이스의 이름
     *   DB creation time : **-r** 옵션에 설정한 노드의 데이터베이스 생성 시간
+    *   Vol creation time : **-r** 옵션에 설정한 노드의 볼륨 생성 시간
     *   EOF LSA : **-r** 옵션에 설정한 노드의 데이터베이스 트랜잭션 로그의 마지막 pageid와 offset 정보. 이 값과 "Copied Active Info."의 EOF LSA 값의 차이만큼 복제 로그 복사의 지연이 있다.
     
     *   Append LSA : **-r** 옵션에 설정한 노드의 데이터베이스 서버가 디스크에 실제로 쓴 트랜잭션 로그의 마지막 pageid와 offset 정보
@@ -3497,6 +3523,7 @@ HA 서비스 운영 중 슬레이브를 새로 추가하려면 기존의 마스�
          *** Copied Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active
@@ -3504,6 +3531,7 @@ HA 서비스 운영 중 슬레이브를 새로 추가하려면 기존의 마스�
          ***  Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active
@@ -3526,6 +3554,7 @@ HA 서비스 운영 중 슬레이브를 새로 추가하려면 기존의 마스�
          *** Copied Active Info. ***
         DB name                        : testdb
         DB creation time               : 11:28:00.000 AM 12/17/2010  (1292552880)
+        Vol creation time              : 11:28:10.000 AM 12/17/2010  (1292552890)
         EOF LSA                        : 1913 | 2976
         Append LSA                     : 1913 | 2976
         HA server state                : active
