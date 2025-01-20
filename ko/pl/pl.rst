@@ -18,10 +18,10 @@ PL/CSQL은 저장 프로시저나 저장 함수를 생성하는데 사용된다.
 ::
 
     <create_procedure> ::=
-        CREATE [ OR REPLACE ] PROCEDURE <identifier> [ ( <seq_of_parameters> ) ]
+        CREATE [ OR REPLACE ] PROCEDURE [schema_name.]<identifier> [ ( <seq_of_parameters> ) ]
         { IS | AS } [ LANGUAGE PLCSQL ] [ <seq_of_declare_specs> ] <body> ;
     <create_function> ::=
-        CREATE [ OR REPLACE ] FUNCTION <identifier> [ ( <seq_of_parameters> ) ] RETURN <type_spec>
+        CREATE [ OR REPLACE ] FUNCTION [schema_name.]<identifier> [ ( <seq_of_parameters> ) ] RETURN <type_spec>
         { IS | AS } [ LANGUAGE PLCSQL ] [ <seq_of_declare_specs> ] <body> ;
 
 위 문법에서 저장 프로시저/함수의 *body*\는 PL/CSQL 실행문들을 포함하고
@@ -1108,9 +1108,9 @@ Exception 선언
 ::
 
     <inner_procedure_decl> ::=
-        PROCEDURE <identifier> [ ( <seq_of_parameters> ) ] { IS | AS } [ <seq_of_declare_specs> ] <body> ;
+        PROCEDURE [schema_name.]<identifier> [ ( <seq_of_parameters> ) ] { IS | AS } [ <seq_of_declare_specs> ] <body> ;
     <inner_function_decl> ::=
-        FUNCTION <identifier> [ ( <seq_of_parameters> ) ] RETURN <type_spec> { IS | AS } [ <seq_of_declare_specs> ] <body> ;
+        FUNCTION [schema_name.]<identifier> [ ( <seq_of_parameters> ) ] RETURN <type_spec> { IS | AS } [ <seq_of_declare_specs> ] <body> ;
 
     <seq_of_parameters> ::= [ <parameter> [, <parameter> ...] ]
     <parameter> ::= <identifier> [ { IN | IN OUT | INOUT | OUT } ] <type_spec> [ COMMENT 'param_comment_string' ]
@@ -1127,6 +1127,7 @@ Exception 선언
     <handler> ::= WHEN <exception_name> [ OR <exeption_name> OR ... ] THEN <seq_of_statements>
     <exception_name> ::= identifier | OTHERS
 
+* *schema_name*: 스키마 이름을 지정한다. 생략하면 현재 세션의 스키마 이름을 사용한다.
 * *parameter*: 인자는 IN, IN OUT, INOUT, OUT 네 가지 경우로 선언할 수 있다. IN OUT과 INOUT은 동일한 효과를 갖는다.
 * *param_comment_string*: 인자 커멘트 문자열을 지정한다.
 * *builtin_type*: :ref:`데이터 타입 <types>` 절에서 설명한 시스템 제공 타입
