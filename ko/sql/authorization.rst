@@ -293,6 +293,10 @@ ALTER ... OWNER
     ALTER PROCEDURE test_procedure OWNER TO public;
     ALTER SERIAL test_serial OWNER TO public;    
 
+.. warning:: 
+
+    **소유자 변경 시, 해당 객체에 대해 이전 소유자가 다른 사용자에게 부여한 모든 권한은 자동으로 해지되므로, 소유자 변경 전에 해당 객체에 부여된 권한 확인 후 소유자를 변경하는 것을 권장한다.**
+
 .. _authorization-method:
 
 사용자 권한 관리 메서드
