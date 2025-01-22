@@ -4759,7 +4759,14 @@ Descriptions for each item are as follows:
 * **size**: The memory size used by the subquery cache.
 * **status**: The activation status of the subquery cache at the end of executing the query.
 
-During query execution, if the **size** of the subquery cache exceeds the set value, or the **size** does not exceed the set value but the **miss**/**hit** ratio exceeds 9 (the miss rate is determined to be high), the subquery cache is disabled, and the **status** of the profiling information is marked as disabled.
+If the **size** exceeds the set value during query execution, the subquery cache is disabled and the **status** in the SQL trace information is output as disabled.
+Additionally, if the **hit** ratio is less than 90%, even when the memory size of the subquery cache does not exceed the set value, the cache may be disabled during query execution because the cache miss rate is considered high.
+
+.. note::
+
+    The **hit** ratio is calculated as follows:
+    
+    :math:`\text{hit ratio} = \frac{\text{hit}}{\text{hit} + \text{miss}}`
 
 The following example contains queries that count the results of a correlated subquery that is executed repeatedly to check for performance improvements depending on whether subquery caching is used.
 The following query creates data to perform the example queries.
