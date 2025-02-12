@@ -47,6 +47,13 @@ Documentation for CUBRID RDBMS
     make html
     ```
 
+   - Hot reloading
+        ```
+        // change directory to en or ko
+        make livehtml
+        ```
+        For details about hot reloading, see https://github.com/sphinx-doc/sphinx-autobuild
+
 5. Mainly used tags on sphinx document(.rst file).
 
    Basically, indent is very important when you use tags. For details, see http://sphinx-doc.org/
