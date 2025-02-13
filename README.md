@@ -24,7 +24,7 @@ Documentation for CUBRID RDBMS
       1. Install read the docs theme
 
          ```
-         pip3 install sphinx_rtd_theme
+         pip3 install sphinx_rtd_theme sphinx-autobuild
          ```
 
       1. Install make to build
